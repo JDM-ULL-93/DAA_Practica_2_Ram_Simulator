@@ -6,7 +6,7 @@
 
 
 enum TokenType { COMMENT, LABEL, INSTRUCTION};
-enum InstructionSet { LOAD, STORE, ADD, SUB, MULT, DIV, READ, WRITE, JUMP, JGTZ, JZERO, HALT };
+enum InstructionSet { LOAD, STORE, ADD, SUB, MULT, DIV, READ, WRITE, JUMP, JGTZ, JZERO, HALT,CONTINUE };
 enum OperatorDirType
 {
 	UNDEFINED = 0,
@@ -53,7 +53,7 @@ public:
 	const OperatorDirType getDirType() const { return this->_dirType; }
 };
 
-//Como no podemos sobrecargar std::istream& operator <<(std::istream&, std::string&). La solución es la siguiente :
+//Como no podemos sobrecargar std::istream& operator <<(std::istream&, std::string&). La soluciï¿½n es la siguiente :
 class WordDelimitedByNewLine : public std::string {};
 //De esta forma, podemos "sobrecargar" el operador y customizarlo a nuestro gusto:
 std::istream& operator >> (std::istream& is, WordDelimitedByNewLine& output);

@@ -1,6 +1,7 @@
 #ifndef STD_H
 #define STD_H 1
 
+#include <direct.h>
 #include <exception>
 #include <string>
 #include <iostream>
@@ -9,7 +10,8 @@
 #include <iterator>
 #include <algorithm>
 #include <map>
-#include <queue>
+//#include <queue>
+#include <list>
 
 
 

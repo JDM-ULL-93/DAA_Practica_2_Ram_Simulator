@@ -36,6 +36,8 @@
             "sources": [
                 "${workspaceRoot}"
             ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "args": "ejemplosRAM/test2.ram input.in output.out",
             //"symbolSearchPath": "${fileDirname}\\bin\\x86\\symbols",
             "preLaunchTask": "[Windows] nmake.exe Clean & Build project"
         }

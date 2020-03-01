@@ -13,6 +13,7 @@ const std::map<std::string, InstructionSet> Tokenizer::IS = {
 	{ "JGTZ", InstructionSet::JGTZ },
 	{ "JZERO", InstructionSet::JZERO },
 	{ "HALT", InstructionSet::HALT },
+	{ "CONTINUE", InstructionSet::CONTINUE},
 };
 
 const std::map<char, OperatorDirType> Tokenizer::DIRECTION_MODES = {
@@ -61,11 +62,11 @@ std::string Tokenizer::removeComments(const std::string input, std::vector<Comme
 		else {//No empieza con caracter de comentario, pero lo puede tener mas adelante
 			char* nextToken;
 			char* token = strtok_s(const_cast<char*>(lines[i].c_str()), "#;", &nextToken);
-			result += std::string(token) + ";\n"; // Marcamos con ';' el final de linea, esto será útil más adelante; (ver linea 75)
+			result += std::string(token) + ";\n"; // Marcamos con ';' el final de linea, esto serï¿½ ï¿½til mï¿½s adelante; (ver linea 75)
 			if(!std::string(nextToken).empty()) comments.push_back(CommentToken(nextToken, i+1));
 		}
 	}
-	//Convertirmos todo lo que sobra a mayúsculas:
+	//Convertirmos todo lo que sobra a mayï¿½sculas:
 	std::use_facet<std::ctype<char>>(std::locale()).toupper(&result[0], &result[0] + result.size());
 	return result;
 }
@@ -79,14 +80,19 @@ std::string Tokenizer::parseLabels(const std::string input, std::vector<LabelTok
 		char* nextToken;
 		char* token = strtok_s(const_cast<char*>(lines[i].c_str()), ":", &nextToken);
 		//std::cout << token << "||" << nextToken << std::endl;
-		if (*nextToken == ';' || *nextToken != 0 ) { //Significa que hay una instrucción. Para esto añadimos el ';' al final
+		if (*nextToken == ';' || *nextToken != 0 ) { //Significa que hay una instrucciÃ³n. Para esto aÃ±adimos el ';' al final
 			std::string instruction(nextToken);
 			instruction.pop_back(); //Sacamos el ';'
-			if (!instruction.empty()) {//instruction = "HALT"; //El caso de que pongamos un label y no haya una sentencia despues, la rellenamos con sentencia 'nula' (= HALT)
+			if (!instruction.empty()) { 
 				result += instruction + "\n";
 				labels.push_back(LabelToken(token, i));
-				instruction.clear();
 			}
+			else{ //Es una linea con un label sin instrucciÃ³n, le aÃ±adimos una instrucciÃ³n
+				result += "CONTINUE\n";
+				labels.push_back(LabelToken(token, i));
+			} //PROBLEMA: Obligamos a la CPU hacer un acceso a memoria inutil.
+			//SOL(por ahora): Que el programador no escriba label asolados.
+			instruction.clear();
 		}
 		else {
 			std::string instruction(token);
@@ -96,6 +102,7 @@ std::string Tokenizer::parseLabels(const std::string input, std::vector<LabelTok
 		}
 			
 	}
+	//std::cout << result << std::endl;
 	return result;
 }
 
@@ -115,7 +122,7 @@ void Tokenizer::parseInstructions(const std::string input, const std::map<std::s
 			sprintf_s(buffer, 255, "Error en sintaxis. Se esperaba una instruccion pero se leyo %s en linea %d", lines[i].c_str(), i + 1);
 			throw TokenizerBadSyntaxException(buffer);
 		}
-		else { //ToFix: Falla porque en una instrucción JUMP, lo que tenemos no es un entero, si no un label
+		else { //ToFix: Falla porque en una instrucciï¿½n JUMP, lo que tenemos no es un entero, si no un label
 				//IDEA: Para solucionarlo, consultar los labels, obtener el label que corresponde y sustituirlo por la linea en la que se encuentra
 			//std::cout << op[1][0] << std::endl;
 			auto itLabel = labelsInfo.end();
@@ -131,16 +138,28 @@ void Tokenizer::parseInstructions(const std::string input, const std::map<std::s
 						sprintf_s(buffer, 255, "Error en sintaxis. Se esperaba un label valido pero se encontro un label (%s) no definido en linea %d", op[1].c_str(), i + 1);
 						throw TokenizerBadSyntaxException(buffer);
 					}
-					instructions.push_back(InstructionToken(itInstruction->second, itLabel->second.getLine()-1, OperatorDirType::UNDEFINED, i + 1));			
+					instructions.push_back(InstructionToken(itInstruction->second, itLabel->second.getLine(), OperatorDirType::UNDEFINED, i + 1));			
 				break;
+				case InstructionSet::CONTINUE:
 				case InstructionSet::HALT:
-					instructions.push_back(InstructionToken(InstructionSet::HALT, 0, OperatorDirType::UNDEFINED, i + 1));
+					instructions.push_back(InstructionToken(itInstruction->second, 0, OperatorDirType::UNDEFINED, i + 1));
 				break;
 				case InstructionSet::DIV:
 					itDir = Tokenizer::DIRECTION_MODES.find(op[1][0]); //Si empieza por * es direccionamiento indirecto, por = es a constante, e.o.c es direccionamiento directo.
 					dirType = itDir == DIRECTION_MODES.end() ? OperatorDirType::DIRECT : itDir->second;
 					if (dirType != OperatorDirType::DIRECT) op[1].erase(0, 1);//Eliminamos el operador de direccionamiento
-					if (std::stoi(op[1]) == 0) throw TokenizerDivByZeroException();
+					if (std::stoi(op[1]) == 0 && dirType == OperatorDirType::CONSTANT) throw TokenizerDivByZeroException();
+					instructions.push_back(InstructionToken(itInstruction->second, std::stoi(op[1]), dirType, i + 1));
+				break;
+				case InstructionSet::STORE:
+					itDir = Tokenizer::DIRECTION_MODES.find(op[1][0]); //Si empieza por * es direccionamiento indirecto, por = es a constante, e.o.c es direccionamiento directo.
+					dirType = itDir == DIRECTION_MODES.end() ? OperatorDirType::DIRECT : itDir->second;
+					if(dirType == OperatorDirType::CONSTANT){
+						char* buffer = new char[255];
+						sprintf_s(buffer, 255, "Error en sintaxis. Direccionamiento no permitido('=' o 'CONSTANTE') en instruccion 'STORE'  en linea %d",i + 1);
+						throw TokenizerBadSyntaxException(buffer);
+					}
+					if(dirType != OperatorDirType::DIRECT) op[1].erase(0, 1);//Eliminamos el operador de direccionamiento
 					instructions.push_back(InstructionToken(itInstruction->second, std::stoi(op[1]), dirType, i + 1));
 				break;
 				default:

@@ -5,7 +5,7 @@
 lee:	read 1
 ;			load 1
 			load 1
-test:
+test:		
 			jzero fin
 			write 1
 			jump lee
