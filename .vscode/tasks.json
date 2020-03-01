@@ -1,0 +1,44 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "[Linux] g++.exe Build active file",
+            "command": "C:\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:\\MinGW\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }, 
+        {
+            "type": "shell",
+            "label": "[UNIX] make.exe Clean & Build project",
+            "command": "make.exe",//"cl.exe",
+            "args": [ //ToDo
+            ],
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "[Windows] nmake.exe Clean & Build project",
+            "command": "nmake.exe",//"cl.exe",
+            "args": [
+                "/F",
+                "MakeFileCL",
+                "all"
+            ],
+            "group": "build"
+        }
+    ]
+}
