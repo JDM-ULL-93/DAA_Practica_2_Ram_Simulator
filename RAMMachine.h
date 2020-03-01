@@ -86,7 +86,7 @@ protected:
 	std::vector<InstructionToken> _memInstruct;
 	Cinta<T> _pipeOut; //Modificar,simplemente cinta que , en ejecución, se irá populando estilo pila FIFO
 	const char* _outputPathTape;
-	bool _debug;
+	bool _debug = false;
 
 	void loadInputTape(const char* path);
 	void outOutputTape(const char* path);

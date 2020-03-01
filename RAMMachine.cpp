@@ -57,7 +57,7 @@ void RAMSimulator<T>::outOutputTape(const char* path)
 template<class T>
 RAMSimulator<T>::RAMSimulator(const Tokenizer& compileInfo, const char* inputPathTape, const char* outputPathTape)
 {
-	//this->_memData.reserve(10);
+	this->_memData.reserve(10);
 	for(int i = 0; i < 10 ; i++)
 	this->_memData.push_back(0);
 	this->_memInstruct = compileInfo.getInstructionsInfo();
@@ -95,7 +95,7 @@ void RAMSimulator<T>::showInstructions(std::ostream& out){
 
 template<class T>
 void RAMSimulator<T>::showData(std::ostream& out){
-	out << "\nData: {(" << this->_memData.size() << ") " << std::endl;
+	out << "\nData: {" << std::endl;
 	for (const T value : this->_memData) out << '\t' << value << std::endl;
 	out << "}" << std::endl;
 }
@@ -211,7 +211,7 @@ void RAMSimulator<T>::execute(unsigned int num){
 			break;
 			case InstructionSet::LOAD: // Carga en acc valor apuntado
 				val = getValue(inst.getDirType(),inst.getArgument());
-				if(_debug) std::cout << _memData[ACC_INDEX] << " = " << val << std::endl;
+				if(_debug) std::cout << _memData[ACC_INDEX] << " <= " << val << std::endl;
 				this->_memData[ACC_INDEX] = val;
 			break;
 			case InstructionSet::MULT:
@@ -223,22 +223,22 @@ void RAMSimulator<T>::execute(unsigned int num){
 			case InstructionSet::READ:
 				val = this->_pipeIn.pop();
 				if(inst.getDirType() == OperatorDirType::DIRECT){
-					if(_debug) std::cout << this->_memData[inst.getArgument()]  << " = " << val << std::endl;
+					if(_debug) std::cout << this->_memData[inst.getArgument()]  << " <= " << val << std::endl;
 					this->_memData[inst.getArgument()] = val;
 				}
 				else if(inst.getDirType() == OperatorDirType::INDIRECT){
-					if(_debug) std::cout << this->_memData[this->_memData[inst.getArgument()]]  << " = " << val << std::endl;
+					if(_debug) std::cout << this->_memData[this->_memData[inst.getArgument()]]  << " <= " << val << std::endl;
 					this->_memData[this->_memData[inst.getArgument()]] = val;
 				}
 					
 			break;
 			case InstructionSet::STORE:
 				if(inst.getDirType() == OperatorDirType::DIRECT){
-					if(_debug) std::cout << this->_memData[inst.getArgument()]  << " = " << this->_memData[ACC_INDEX] << std::endl;
+					if(_debug) std::cout << this->_memData[inst.getArgument()]  << " <= " << this->_memData[ACC_INDEX] << std::endl;
 					this->_memData[inst.getArgument()] = this->_memData[ACC_INDEX];
 				}					
 				else if(inst.getDirType() == OperatorDirType::INDIRECT){
-					if(_debug) std::cout << this->_memData[this->_memData[inst.getArgument()]]  << " = " << this->_memData[ACC_INDEX] << std::endl;
+					if(_debug) std::cout << this->_memData[this->_memData[inst.getArgument()]]  << " <= " << this->_memData[ACC_INDEX] << std::endl;
 					this->_memData[this->_memData[inst.getArgument()]] = this->_memData[ACC_INDEX];
 				}
 					
@@ -312,8 +312,10 @@ void RAMSimulator<T>::debug(std::ostream& out){
 			case 2:
 				//if(lines == nullptr) out << "Es nulo" << std::endl;
 				//else out << "no es nulo y va a buscar en pos " << _pc << ". Ademas, el tamaño es " << lines->size() << std::endl;
+				out << "_______________________" << std::endl;
 				out << (*lines)[_pc];
 				execute(1);
+				out << "_______________________" << std::endl;
 			break;
 			case 3:
 				out << dessamsembly(this->_memInstruct);
