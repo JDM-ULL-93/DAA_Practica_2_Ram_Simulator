@@ -23,7 +23,7 @@ public:
 	
 
 };
-
+//////////////////////////////////////////////////////////////////////////////////////
 class ReaderEOFException : public Exception {
 public:
 	explicit ReaderEOFException() : Exception("EOF encontrado. No se ha podido leer nada") {}
@@ -61,6 +61,32 @@ public:
 class StrReader : public Reader<const std::string&> {
 public:
 	explicit StrReader(const char* path) : Reader(path) {}
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+class WriterErrorException : public ExceptionErrorNumber {
+public:
+	explicit WriterErrorException(int errorNumber) : ExceptionErrorNumber(errorNumber, "Error escribiendo el fichero.") {}
+};
+
+template<class T>
+class Writer : public FileHandler{
+public:
+	explicit Writer<T>(const char* path) : FileHandler(path,"wb"){}
+	void write(T data);
+};
+
+
+class StrWriter : public Writer<const std::string&> {
+public:
+	explicit StrWriter(const char* path) : Writer(path) {}
+};
+
+class IntWriter : public Writer<const int> {
+public:
+	explicit IntWriter(const char* path) : Writer(path) {}
 };
 
 #endif // !FILEHANDLER_H

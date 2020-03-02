@@ -10,7 +10,8 @@ FileHandler::~FileHandler()
 FileHandler::FileHandler(const char* path,const char* openMode)
 {
 	_file = this->open(path, openMode);
-	_size = this->calcSize();
+	std::size_t found = std::string(openMode).find('r');
+	if(found!=std::string::npos)_size = this->calcSize();
 }
 
 FILE* FileHandler::open(const char* path,const char* openMode) {
@@ -44,7 +45,7 @@ const char* Reader<const char*>::read()
 	fpos_t begin = 0;
 	fsetpos(_file, &begin);
 	//TODO: 
-	//Tratar el problema de ficheros que excedan el tamaño de un entero (con lo cual habría que repetir este proceso de lectura varias veces)
+	//Tratar el problema de ficheros que excedan el tamaï¿½o de un entero (con lo cual habrï¿½a que repetir este proceso de lectura varias veces)
 	try {
 		char* buffer = new char[_size+1];
 		for (unsigned int i = 0; i < _size; i++)
@@ -66,7 +67,7 @@ const wchar_t* Reader<const wchar_t*>::read()
 	fpos_t begin = 0;
 	fsetpos(_file, &begin);
 	//TODO: 
-	//Tratar el problema de ficheros que excedan el tamaño de un entero (con lo cual habría que repetir este proceso de lectura varias veces)
+	//Tratar el problema de ficheros que excedan el tamaï¿½o de un entero (con lo cual habrï¿½a que repetir este proceso de lectura varias veces)
 	try {
 		wchar_t* buffer = new wchar_t[_size+1];
 		for (unsigned int i = 0; i < _size; i++)
@@ -87,7 +88,7 @@ const std::string& Reader<const std::string&>::read()
 	fpos_t begin = 0;
 	fsetpos(_file, &begin);
 	//TODO: 
-	//Tratar el problema de ficheros que excedan el tamaño de un entero (con lo cual habría que repetir este proceso de lectura varias veces)
+	//Tratar el problema de ficheros que excedan el tamaï¿½o de un entero (con lo cual habrï¿½a que repetir este proceso de lectura varias veces)
 	try {
 		char* buffer = new char[_size+1];
 		for (unsigned int i = 0; i < _size; i++)
@@ -103,6 +104,23 @@ const std::string& Reader<const std::string&>::read()
 		else
 			throw ReaderErrorException(ferror(_file));
 	}
+
+}
+
+
+void Writer<const std::string&>::write(const std::string& data){
+	fwrite(data.data(),sizeof(char),data.size(),_file);
+	int error = ferror(_file);
+	if(error) throw WriterErrorException(error);
+
+}
+
+void Writer<const int>::write(const int data){
+	char* buffer = new char[_MAX_PATH];
+	sprintf(buffer,"%d, ",data);
+	fputs(buffer,_file);
+	int error = ferror(_file);
+	if(error) throw WriterErrorException(error);
 
 }
 

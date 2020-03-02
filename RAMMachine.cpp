@@ -48,10 +48,11 @@ template<class T>
 void RAMSimulator<T>::outOutputTape(const char* path)
 {
 	//ToDo . Escribir contenido en fichero apuntado por path
-	std::cout << "Output: { " << std::endl;
-	for (const int value : _pipeOut.getContent())
-		std::cout << '\t' << value << std::endl;
-	std::cout << "}" << std::endl;
+	Writer<const T> writer(path);
+	do{
+		writer.write(_pipeOut.pop());
+	}while(!_pipeOut.getContent().empty());
+	writer.close();
 }
 
 template<class T>
@@ -59,7 +60,7 @@ RAMSimulator<T>::RAMSimulator(const Tokenizer& compileInfo, const char* inputPat
 {
 	this->_memData.reserve(10);
 	for(int i = 0; i < 10 ; i++)
-	this->_memData.push_back(0);
+	this->_memData.push_back(T());
 	this->_memInstruct = compileInfo.getInstructionsInfo();
 	this->_pipeIn.setStrategy(new FIFOStrategy<int>());
 	this->_pipeOut.setStrategy(new FIFOStrategy<int>());
@@ -257,6 +258,7 @@ void RAMSimulator<T>::execute(unsigned int num){
 			break;
 			case InstructionSet::WRITE:
 				val = getValue(inst.getDirType(),inst.getArgument());
+				//std::cout << "Insertando : " << val << std::endl; 
 				this->_pipeOut.push(val);
 			break;
 		}
@@ -282,7 +284,7 @@ T RAMSimulator<T>::getValue(OperatorDirType dirType, unsigned int arg){
 template<class T>
 void RAMSimulator<T>::help(std::ostream& out){
 	out<< "Modo debug" << std::endl;
-	out << "\t1 - Ver Instrucciones" << std::endl;
+	out << "\t1 - Ver Estado de Memoria" << std::endl;
 	out << "\t2 - Traza" << std::endl;
 	out << "\t3 - Desamblador" << std::endl;
 	out << "\t4 - Ver Cinta de entrada" << std::endl;
