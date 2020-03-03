@@ -59,6 +59,8 @@ int main(int argc, const char** args)
 					break;
 				}
 			} while (opt != '0' && !ram.finished());
+			if(opt != '0') std::cout << "Se han ejecutado " << ram.getNumInstructions() << " instrucciones" << std::endl;
+			else std::cout << "Se ha cancelado la ejecución del programa " << std::endl;
 		}
 		/*
 		while (!test.empty()) { //Recorrido LIFO

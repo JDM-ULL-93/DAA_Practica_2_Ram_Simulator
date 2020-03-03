@@ -348,8 +348,13 @@ void RAMSimulator<T>::debug(std::ostream& out){
 }
 
 template<class T>
-bool RAMSimulator<T>::finished(){
+bool RAMSimulator<T>::finished() const{
 	return _pc >= _memInstruct.size();
+}
+
+template<class T>
+unsigned int RAMSimulator<T>::getNumInstructions() const{
+	return _memInstruct.size();
 }
 
 template class RAMSimulator<int>;

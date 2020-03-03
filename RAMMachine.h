@@ -115,7 +115,9 @@ public:
 
 	void debug(std::ostream& out);
 
-	bool finished();
+	bool finished() const;
+
+	unsigned int getNumInstructions() const;
 };
 
 
