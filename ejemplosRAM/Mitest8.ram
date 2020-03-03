@@ -1,5 +1,5 @@
 # Calcula n^n, pero en lugar de la forma nomal(O(n)) en tiempo logaritmico(O(log n))
-# Solo funciona con n = 2^k
+# Solo funciona con n = 2^k && k>=0
 # Para facilitar el trabajo -> acc = mem(0), res = mem(1) y size = mem(2)
 
 				READ 0; acc = n(leido de cinta entrada)

@@ -163,8 +163,11 @@ const std::string RAMSimulator<T>::dessamsembly(const std::vector<InstructionTok
 		i += 1;
 	}
 	std::string res;
-	for (std::string str : *linesTemp)
+	int pos= 0;
+	for (std::string str : *linesTemp){
 		res += str;
+		if( pos++ == _pc) res += "(PC)->\t";
+	}
 	if(lines != nullptr)
 		lines->assign(linesTemp->begin(), linesTemp->end());
 	linesTemp->clear();

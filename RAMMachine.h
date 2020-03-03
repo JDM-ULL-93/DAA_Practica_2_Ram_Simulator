@@ -111,7 +111,7 @@ public:
 
 	const std::string dessamsembly(const std::vector<InstructionToken>& memInstruction,std::vector<std::string>* lines = nullptr);
 
-	void execute(unsigned int num = 0);
+	virtual void execute(unsigned int num = 0);
 
 	void debug(std::ostream& out);
 
