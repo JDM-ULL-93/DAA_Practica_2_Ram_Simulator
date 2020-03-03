@@ -35,7 +35,12 @@ fin_else:		LOAD 1; acc = res
 				LOAD 2; acc = size
 				SUB =1; acc = acc - 1
 				JGTZ init_while; if(acc > 0) Go to init_while
-				WRITE 1; return result
+				LOAD 4; acc = resto
+				JZERO last; if(resto == 0) Go to last
+				LOAD 1; acc = res
+				MULT 3; acc = acc * cpy
+				STORE 1; res = acc
+last:			WRITE 1; return result
 				JUMP fin
 else:			WRITE =1; return 1
 fin:			HALT

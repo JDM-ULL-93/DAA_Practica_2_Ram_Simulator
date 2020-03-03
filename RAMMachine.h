@@ -81,10 +81,10 @@ template <class T = int>
 class RAMSimulator {
 protected:
 	unsigned int _pc = 0;
-	Cinta<T> _pipeIn; //Modificar, simplemente leer y cargar en cinta
+	Cinta<T> _pipeIn;
 	std::vector<T> _memData;
 	std::vector<InstructionToken> _memInstruct;
-	Cinta<T> _pipeOut; //Modificar,simplemente cinta que , en ejecución, se irá populando estilo pila FIFO
+	Cinta<T> _pipeOut;
 	const char* _outputPathTape;
 	bool _debug = false;
 
@@ -114,6 +114,8 @@ public:
 	void execute(unsigned int num = 0);
 
 	void debug(std::ostream& out);
+
+	bool finished();
 };
 
 

@@ -212,7 +212,7 @@ void RAMSimulator<T>::execute(unsigned int num){
 			break;
 			case InstructionSet::LOAD: // Carga en acc valor apuntado
 				val = getValue(inst.getDirType(),inst.getArgument());
-				if(_debug) std::cout << _memData[ACC_INDEX] << " <= " << val << std::endl;
+				if(_debug) std::cout << "mem[0] <= " << val << std::endl;
 				this->_memData[ACC_INDEX] = val;
 			break;
 			case InstructionSet::MULT:
@@ -235,11 +235,11 @@ void RAMSimulator<T>::execute(unsigned int num){
 			break;
 			case InstructionSet::STORE:
 				if(inst.getDirType() == OperatorDirType::DIRECT){
-					if(_debug) std::cout << this->_memData[inst.getArgument()]  << " <= " << this->_memData[ACC_INDEX] << std::endl;
+					if(_debug) std::cout << "mem[" <<inst.getArgument()  << "] <= " << this->_memData[ACC_INDEX] << std::endl;
 					this->_memData[inst.getArgument()] = this->_memData[ACC_INDEX];
 				}					
 				else if(inst.getDirType() == OperatorDirType::INDIRECT){
-					if(_debug) std::cout << this->_memData[this->_memData[inst.getArgument()]]  << " <= " << this->_memData[ACC_INDEX] << std::endl;
+					if(_debug) std::cout << "mem[*" << inst.getArgument() << "] <= " << this->_memData[ACC_INDEX] << std::endl;
 					this->_memData[this->_memData[inst.getArgument()]] = this->_memData[ACC_INDEX];
 				}
 					
@@ -283,7 +283,8 @@ T RAMSimulator<T>::getValue(OperatorDirType dirType, unsigned int arg){
 
 template<class T>
 void RAMSimulator<T>::help(std::ostream& out){
-	out<< "Modo debug" << std::endl;
+	out<< "...:Modo debug:..." << std::endl;
+	out << "__________________" << std::endl;
 	out << "\t1 - Ver Estado de Memoria" << std::endl;
 	out << "\t2 - Traza" << std::endl;
 	out << "\t3 - Desamblador" << std::endl;
@@ -291,6 +292,8 @@ void RAMSimulator<T>::help(std::ostream& out){
 	out << "\t5 - Ver Cinta de salida" << std::endl;
 	out << "\t6 - Ejecutar" << std::endl;
 	out << "\t0 - Salir" << std::endl;
+	out << "\th - Ayuda" << std::endl;
+	out << "Opcion: ";
 }
 
 template<class T>
@@ -298,20 +301,18 @@ void RAMSimulator<T>::debug(std::ostream& out){
 	
 	std::vector<std::string>* lines = new std::vector<std::string>();
 	dessamsembly(this->_memInstruct,lines);
-	int opt = 0;
+	char opt = 0;
 	out << std::endl;
 	help(out);
 	_debug = true;
 	do{
-		out << "\t7 - Ayuda" << std::endl;
-		out << "Opcion: ";
+		std::cout << "=> ";
 		std::cin >> opt;
-
 		switch(opt){
-			case 1:
+			case '1':
 				showData(out);
 			break;
-			case 2:
+			case '2':
 				//if(lines == nullptr) out << "Es nulo" << std::endl;
 				//else out << "no es nulo y va a buscar en pos " << _pc << ". Ademas, el tamaño es " << lines->size() << std::endl;
 				out << "_______________________" << std::endl;
@@ -319,28 +320,36 @@ void RAMSimulator<T>::debug(std::ostream& out){
 				execute(1);
 				out << "_______________________" << std::endl;
 			break;
-			case 3:
+			case '3':
 				out << dessamsembly(this->_memInstruct);
 			break;
-			case 4:
+			case '4':
 				showInputTape(out);
 			break;
-			case 5:
+			case '5':
 				showOutputTape(out);
 			break;
-			case 6:
+			case '6':
 				_debug = false;
 				execute();
 			break;
-			case 7:
+			case 'h':
 				help(out);
 			break;
+			default: //Salir
+				_pc = _memInstruct.size();
+			break;
 		}
-	}while(opt != 0 && _pc <= _memInstruct.size());
+	}while(opt != '0' && !finished());
 	if(opt != 0) out << "El programa termino. Saliendo de modo debug..." << std::endl;
 	lines->clear();
 	delete lines;
 	_debug = false;
+}
+
+template<class T>
+bool RAMSimulator<T>::finished(){
+	return _pc >= _memInstruct.size();
 }
 
 template class RAMSimulator<int>;

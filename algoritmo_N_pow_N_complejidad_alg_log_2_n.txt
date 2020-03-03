@@ -1,0 +1,53 @@
+https://ull-esit-pl-1819.github.io/introduccion/tema1-introduccion-a-javascript/practicas/p3-t1-handling-events/reto
+
+https://classroom.github.com/assignment-invitations/1a6e87378dfb4b4212bc1220e0a899be
+
+
+_________________
+
+ALgoritmo n^n para todos los números
+
+init:
+res = n;
+cpy = n;
+size = n;
+resto = 0;
+do{
+	if(resto > 0){
+		temp = res;
+		res = res* cpy;
+		cpy = temp;
+	}
+	else cpy = res;
+	res = res * cpy;
+	//temp = size;
+	size%resto = size/2;
+	//resto = temp - size*2
+	
+	
+}while( size > 1)
+if(resto > 0)
+	res = res * cpy
+return res
+
+
+TRAZA: 
+init:
+res = 6
+cpy = 6
+size = 6
+resto = 0
+
+it0:
+if(0 > 0) //NO_ENTRA
+else cpy = 6;
+res = 6*6 = 36
+size%resto = 6/2 = 3%0
+
+it1:
+if(0 > 0)//NO_ENTRA
+else cpy = 36
+res = 36 * 36 = 1296
+size%resto = 3/2 = 1%1
+
+
