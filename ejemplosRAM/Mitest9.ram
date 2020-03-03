@@ -1,0 +1,43 @@
+# Calcula n^n, pero en lugar de la forma nomal(O(n)) en tiempo logaritmico(O(log n))
+# Solo funciona con n = 2^k
+# Para facilitar el trabajo -> acc = mem(0), res = mem(1), size = mem(2), cpy = mem(3), resto =  mem(4), temp = mem(5), temp2 = mem(6)
+
+				READ 0; acc = n(leido de cinta entrada)
+				JZERO else; if(acc == 0) Go to else
+				STORE 1; res = acc
+				STORE 2; size = acc
+				STORE 3; cpy = acc
+				LOAD =0; acc = 0
+				STORE 4; resto = acc = 0
+init_while:		LOAD 4; acc = resto
+				JZERO else_in_while
+				LOAD 1; acc = res
+				STORE 5; temp = res
+				MULT 3; acc = acc * cpy;
+				STORE 1; res = acc
+				LOAD 5; acc = temp
+				STORE 3; cpy = acc
+				JUMP fin_else
+else_in_while:	LOAD 1; acc = res
+				STORE 3; cpy = acc;
+fin_else:		LOAD 1; acc = res
+				MULT 3; acc = acc * cpy
+				STORE 1; res = acc
+				LOAD 2; acc = size
+				STORE 5; temp = acc
+				DIV =2; acc = acc / 2
+				STORE 2; size = acc
+				MULT =2; acc = acc * 2
+				STORE 6; temp2 = acc
+				LOAD 5; acc = temp
+				SUB 6; acc = acc - temp2
+				STORE 4; resto = acc
+				LOAD 2; acc = size
+				SUB =1; acc = acc - 1
+				JGTZ init_while; if(acc > 0) Go to init_while
+				WRITE 1; return result
+				JUMP fin
+else:			WRITE =1; return 1
+fin:			HALT
+				
+				
